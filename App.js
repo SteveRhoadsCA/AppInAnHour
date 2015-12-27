@@ -61,7 +61,19 @@ Ext.define('CustomApp', {
          }
 
         });
-
+        /*
+        var context = me.getContext();
+        var severityComboBox = Ext.create('Rally.ui.combobox.UserSearchComboBox',{
+          fieldLabel: "Filter by Owner:",
+          labelAlign: 'right',
+          project: context.getProject(),
+          listeners: {
+            ready: me._loadData,        // initialization flow: when this is ready, we're done and can load all data
+            select: me._loadData,       // user interactivity: when they choose a value, (re)load the data
+            scope: me                   // <--- don't for get to pass the 'app' level scope into the combo box so the async event functions can call app-level func's!
+          }  
+        });
+        */
         this.down('#pulldown-container').add(severityComboBox); // add the severity list to the pulldown container so it lays out horiz, not the app!
      },
 
@@ -106,6 +118,7 @@ Ext.define('CustomApp', {
       // lookup what the user chose from each pulldown
       var selectedIterRef = this.down('#iteration-combobox').getRecord().get('_ref');              // the _ref is unique, unlike the iteration name that can change; lets query on it instead!
       var selectedSeverityValue = this.down('#severity-combobox').getRecord().get('value');   // remember to console log the record to see the raw data and relize what you can pluck out
+      //var selectedSeverityValue = this.down('#severity-combobox').getRecord().getValue();   // remember to console log the record to see the raw data and relize what you can pluck out
       // filters to send to Rally during the store load
       var myFilters = this._getFilters(selectedIterRef, selectedSeverityValue);
 
@@ -133,7 +146,7 @@ Ext.define('CustomApp', {
               },
               scope: me                         // This tells the wsapi data store to forward pass along the app-level context into ALL listener functions
           },
-          fetch: ['FormattedID', 'Name', 'Severity', 'Iteration']   // Look in the WSAPI docs online to see all fields available!
+          fetch: ['FormattedID', 'Name', 'Severity', 'Iteration','State']   // Look in the WSAPI docs online to see all fields available!
         });
       }
     },
@@ -146,7 +159,7 @@ Ext.define('CustomApp', {
       me.defectGrid = Ext.create('Rally.ui.grid.Grid', {
         store: myDefectStore,
         columnCfgs: [         // Columns to display; must be the same names specified in the fetch: above in the wsapi data store
-          'FormattedID', 'Name', 'Severity', 'Iteration'
+          'FormattedID', 'Name', 'Severity', 'Iteration','State'
         ]
       });
 
